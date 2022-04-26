@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
@@ -15,7 +9,7 @@ import pandas as pd
 from selenium.webdriver.common.action_chains import ActionChains
 import re  
 options = webdriver.ChromeOptions()
-# prefs、.add_experimental_option:設定不會跳出網頁通知
+# prefs:設定不會跳出網頁通知
 prefs = {
     'profile.default_content_setting_values' :
         {
@@ -24,14 +18,17 @@ prefs = {
 }
 options.add_experimental_option('prefs',prefs)
 browser = webdriver.Chrome(chrome_options = options)
-browser.get("https://www.tripadvisor.com/Hotels-g186220-Bristol_England-Hotels.html") # 城市爬蟲的網址
+# 城市爬蟲的網址
+browser.get("https://www.tripadvisor.com/Hotels-g186220-Bristol_England-Hotels.html") 
 bs = BeautifulSoup(browser.page_source, 'html.parser')
 time.sleep(2)
-ActionChains(browser).move_by_offset(1, 1).click().perform() 
-html_list=[]
-pages=round(int(re.sub("\D", "",bs.find('span',{'class':'eMoHQ'}).text))/30)+1
-print(pages)
-#pages=2
+ActionChains(browser).move_by_offset(1, 1).click().perform()
+# 創建各飯店網頁的列表
+html_list = []
+# 抓取總頁數
+pages = round(int(re.sub("\D", "",bs.find('span',{'class':'eMoHQ'}).text))/30)+1
+
+
 htm=bs.find_all('a',{'class':'property_title prominent'})
 for i in htm:
     html_list.append(i.get('href'))
@@ -57,25 +54,5 @@ finally:
     
 
 
-# In[14]:
 
-
-df=pd.DataFrame(columns=[
-            '名稱',
-            '網址'])
-df['名稱'] = pd.Series(name_list)
-df['網址'] = pd.Series(html_list)
-df.to_csv('London.csv',encoding = 'utf-8_sig',index = False)
-
-
-# In[10]:
-
-
-df
-
-
-# In[49]:
-
-
-df.to_csv('苗栗.csv',encoding = 'utf-8_sig',index = False)
 
